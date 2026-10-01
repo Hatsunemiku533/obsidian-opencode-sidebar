@@ -1,0 +1,13 @@
+.oc-sb { display:flex; flex-direction:column; height:100%; padding:0; background:var(--background-primary); color:var(--text-normal); }
+.oc-sb-bar { display:flex; align-items:center; gap:6px; padding:8px 10px; border-bottom:1px solid var(--background-modifier-border); flex:none; }
+.oc-sb-bar button { box-shadow:none; }
+.oc-sb-session-btn { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:left; }
+.oc-sb-embed { flex:1 1 auto; min-height:0; position:relative; }
+.oc-sb-embed webview { position:absolute; inset:0; width:100%; height:100%; border:none; }
+.oc-sb-status { flex:none; padding:5px 10px; font-size:var(--font-smallest); color:var(--text-muted); border-top:1px solid var(--background-modifier-border); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.oc-sb-dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--text-muted); }
+.oc-sb-dot.ok { background:var(--color-green); }
+.oc-sb-dot.err { background:var(--color-red); }
+.oc-sb-dot.warn { background:var(--color-yellow); }
+.oc-sb-muted { font-size:var(--font-smallest); color:var(--text-muted); }
+.oc-sb-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }
