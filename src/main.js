@@ -18,7 +18,7 @@ function remoteModule() {
 class ConfirmReload extends Modal {
   constructor(app, reload) { super(app); this.reload = reload; }
   onOpen() {
-    this.contentEl.createEl('h3', { text: '重新加载 OpenCode？' });
+    this.titleEl.setText('重新加载 OpenCode？');
     this.contentEl.createEl('p', { text: '未发送的草稿可能丢失，已保存的对话不会被删除。' });
     const row = this.contentEl.createDiv({ cls: 'oc-sb-actions' });
     row.createEl('button', { text: '取消' }).onclick = () => this.close();
@@ -100,7 +100,8 @@ class SidebarView extends ItemView {
       const own = this.statusEl.getBoundingClientRect();
       const bar = doc.querySelector('.status-bar')?.getBoundingClientRect();
       const covered = bar && bar.width > 0 && bar.top < own.bottom && bar.bottom > own.top && bar.left < own.right && bar.right > own.left;
-      this.statusEl.style.paddingRight = covered ? Math.ceil(own.right - bar.left + 12) + 'px' : '';
+      // Only a CSS variable is set here; the padding itself lives in styles.css.
+      this.statusEl.setCssProps({ '--oc-status-reserve': covered ? Math.ceil(own.right - bar.left + 2) + 'px' : '0px' });
     };
     this.statusObserver?.disconnect();
     this.statusObserver = new ResizeObserver(() => fit());
@@ -493,7 +494,6 @@ class SettingsTab extends PluginSettingTab {
   display() {
     const { containerEl } = this;
     containerEl.empty();
-    containerEl.createEl('h2', { text: 'OpenCode Sidebar' });
     containerEl.createEl('p', { text: 'Settings belong to this vault. After editing, use Apply and reconnect below. OpenCode must already be running.' });
     const text = (key, name, description, secret = false) => {
       new Setting(containerEl).setName(name).setDesc(description).addText((field) => {

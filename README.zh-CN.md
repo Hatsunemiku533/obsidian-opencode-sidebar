@@ -2,6 +2,14 @@
 
 把 OpenCode 原生网页嵌入 Obsidian 桌面侧栏。非官方插件，不属于 Obsidian 或 OpenCode 团队。
 
+![Obsidian 侧栏里的 OpenCode，旁边是笔记](docs/images/hero.png)
+
+![复制带公式的回复并粘贴到笔记](docs/images/copy-markdown.png)
+
+![字体与字号菜单](docs/images/font-menu.png)
+
+![深色模式](docs/images/dark.png)
+
 ## 安装与多仓库使用
 
 目前发布在 GitHub，**尚未提交 Obsidian 社区插件市场**。
@@ -37,6 +45,14 @@
 
 更多菜单里的“打开 OpenCode TUI”在 Windows 本机启动脚本，不下载软件、不启动 OpenCode Web 服务。项目目录下有 `启动opencode-TUI.bat` 时可直接使用；否则在插件设置填写本机 `.bat` / `.cmd` 绝对路径。远程服务器不会自动映射到本机脚本。脚本可能启动程序，请只使用自己信任的脚本。
 启动结果只确认外层命令打开了脚本；TUI 是否连接成功请看终端窗口，不以进程创建成功冒充服务连接成功。未找到脚本或启动命令失败会明确提示。
+
+## 披露说明
+
+- **网络：** 只连接你配置的 OpenCode Web 地址；点击阅读按钮时才在浏览器打开阅读服务地址（默认 `http://127.0.0.1:18924`，是本机地址）。无遥测。
+- **写入的文件：** 每个 vault 的诊断日志位于系统临时目录 `opencode-sidebar` 子目录（Windows 为 `%TEMP%\opencode-sidebar\`），以及插件自己的 `data.json`。
+- **运行本机程序：** 仅在点击“打开 OpenCode TUI”时运行你配置的 `.bat`/`.cmd` 脚本，请只用可信脚本。
+- **凭据：** 可选的 Basic Auth 密码以明文保存在 `data.json`。
+- **仅桌面端：** 依赖 Electron webview，手机不可用。
 
 ## 认证与隐私
 

@@ -5,6 +5,23 @@ This is an unofficial plugin, not affiliated with Obsidian or OpenCode.
 
 [中文说明](README.zh-CN.md)
 
+![OpenCode in the Obsidian sidebar, next to a note](docs/images/hero.png)
+
+## Screenshots
+
+**Copy a reply, paste it into a note.** Formulas are copied as Markdown source
+(`$...$` and `$$...$$`), so they render in the editor instead of becoming KaTeX text.
+
+![Copying a reply with math and pasting it into a note](docs/images/copy-markdown.png)
+
+**Pick the reading font and size** from the **Aa** button in the toolbar.
+
+![Font and size menu](docs/images/font-menu.png)
+
+**Dark mode** keeps OpenCode's native colors; the plugin shell follows your Obsidian theme.
+
+![Dark theme](docs/images/dark.png)
+
 ## Features
 
 - Embed the native OpenCode Web UI in a sidebar.
@@ -111,6 +128,19 @@ debugger attachment is released after the startup check or view disposal.
 Up to 50 projects are retained, prioritizing the selected and most recent project.
 The adapter targets OpenCode Web 1.18.18's native storage format; upstream changes
 may require an update.
+
+## Disclosures
+
+- **Network:** the plugin connects only to the OpenCode Web URL you configure, and
+  (when you click the reader button) opens the reader URL in your browser. The
+  default reader URL is `http://127.0.0.1:18924`, a local address. No telemetry.
+- **Files written:** per-vault diagnostic logs in `<system temp>/opencode-sidebar/`
+  (on Windows, `%TEMP%\opencode-sidebar\`), and the plugin's own `data.json`.
+- **Local program execution:** only when you click **Open OpenCode TUI**, the plugin
+  runs the `.bat`/`.cmd` launcher you configured. Use scripts you trust.
+- **Credentials:** the optional Basic Auth password is stored in plaintext in `data.json`.
+- **Desktop only:** it uses Electron's webview, so it does not work on mobile.
+- **No `innerHTML`:** math is rendered with bundled KaTeX and inserted through `DOMParser`.
 
 ## Security And Privacy
 

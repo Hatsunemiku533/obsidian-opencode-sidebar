@@ -28,7 +28,9 @@ function installPageFixes(win) {
         while ((match = regex.exec(text))) {
           fragment.append(doc.createTextNode(text.slice(offset, match.index)));
           const span = doc.createElement('span');
-          span.innerHTML = win.katex.renderToString(match[1] || match[2], { displayMode: !!match[1], throwOnError: false, strict: 'ignore', trust: false });
+          // Parse KaTeX output (trust:false) with DOMParser instead of assigning innerHTML.
+          const html = win.katex.renderToString(match[1] || match[2], { displayMode: !!match[1], throwOnError: false, strict: 'ignore', trust: false });
+          span.append(...new win.DOMParser().parseFromString(html, 'text/html').body.childNodes);
           fragment.append(span);
           offset = regex.lastIndex;
         }

@@ -1,5 +1,5 @@
 /* Nordic Mist palette (主题风格/themes/nordic-mist.css) scoped to the plugin shell; the embedded page is a separate webview. */
-.oc-sb {
+.oc-sb, .oc-sb-picker {
   --oc-bg: #eef1f4;
   --oc-card: #fbfcfd;
   --oc-nav: #e4e9ee;
@@ -9,7 +9,25 @@
   --oc-text: #22303c;
   --oc-muted: #6b7a88;
   --oc-border: #d8dee5;
+  --oc-border-strong: #b9c2cb;
+  --oc-shadow: rgba(34, 48, 60, .14);
   --oc-ease: cubic-bezier(.32, .72, 0, 1);
+}
+/* In a dark Obsidian theme the shell follows the theme's own colors instead of the light palette. */
+.theme-dark .oc-sb, .theme-dark .oc-sb-picker {
+  --oc-bg: var(--background-secondary);
+  --oc-card: var(--background-primary);
+  --oc-nav: var(--background-secondary-alt);
+  --oc-primary: var(--interactive-accent);
+  --oc-primary-hover: var(--text-accent-hover);
+  --oc-primary-soft: var(--background-modifier-hover);
+  --oc-text: var(--text-normal);
+  --oc-muted: var(--text-muted);
+  --oc-border: var(--background-modifier-border);
+  --oc-border-strong: var(--background-modifier-border-hover);
+  --oc-shadow: rgba(0, 0, 0, .4);
+}
+.oc-sb {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -38,7 +56,7 @@
 }
 .oc-sb-bar button:hover {
   background: var(--oc-primary-soft);
-  border-color: #b9c2cb;
+  border-color: var(--oc-border-strong);
   color: var(--oc-primary-hover);
 }
 .oc-sb-bar button:focus-visible { outline: 2px solid var(--oc-primary); outline-offset: 2px; }
@@ -49,19 +67,19 @@
 .oc-sb-embed webview { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
 /* Obsidian reserves ~32px below views for its floating status bar; let our status line use that row instead. */
 .workspace-leaf-content .view-content.oc-sb { padding-bottom: 0; }
-.oc-sb-status { flex: none; display: flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; font-size: 12px; color: var(--oc-muted); background: var(--oc-bg); overflow: hidden; white-space: nowrap; }
+.oc-sb-status { flex: none; display: flex; align-items: center; gap: 6px; height: 26px; padding: 0 calc(10px + var(--oc-status-reserve, 0px)) 0 10px; font-size: 12px; color: var(--oc-muted); background: var(--oc-bg); overflow: hidden; white-space: nowrap; }
 .oc-sb-status > span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .oc-sb-dot { flex: none; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--oc-muted); vertical-align: middle; }
 .oc-sb-dot.ok { background: #4f7f63; }
 .oc-sb-dot.err { background: #a9564b; }
 .oc-sb-dot.warn { background: #84682f; }
 .oc-sb-muted { font-size: 12px; color: var(--oc-muted); }
-.oc-sb-picker { background: #fbfcfd; color: #22303c; border: 1px solid #d8dee5; border-radius: 12px; box-shadow: 0 10px 28px rgba(34, 48, 60, .14); }
-.oc-sb-picker .prompt-input { background: #fbfcfd; color: #22303c; }
+.oc-sb-picker { background: var(--oc-card); color: var(--oc-text); border: 1px solid var(--oc-border); border-radius: 12px; box-shadow: 0 10px 28px var(--oc-shadow); }
+.oc-sb-picker .prompt-input { background: var(--oc-card); color: var(--oc-text); }
 .oc-sb-picker .suggestion-item { border-radius: 8px; }
-.oc-sb-picker .suggestion-item.is-selected { background: #e1e9f0; color: #22303c; }
-.oc-sb-picker .suggestion-item:focus-visible { outline: 2px solid #3f6684; outline-offset: -2px; }
-.oc-sb-picker .oc-sb-muted { color: #6b7a88; }
+.oc-sb-picker .suggestion-item.is-selected { background: var(--oc-primary-soft); color: var(--oc-text); }
+.oc-sb-picker .suggestion-item:focus-visible { outline: 2px solid var(--oc-primary); outline-offset: -2px; }
+.oc-sb-picker .oc-sb-muted { color: var(--oc-muted); }
 .oc-sb-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
 @media (prefers-reduced-motion: no-preference) {
   .oc-sb-bar button {
