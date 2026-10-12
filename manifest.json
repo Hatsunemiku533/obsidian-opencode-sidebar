@@ -1,7 +1,7 @@
 {
   "id": "opencode-sidebar",
   "name": "OpenCode Sidebar",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "minAppVersion": "1.5.0",
   "description": "Use OpenCode Web in a desktop sidebar with per-vault connections and Markdown math copying.",
   "author": "Hatsunemiku533",
