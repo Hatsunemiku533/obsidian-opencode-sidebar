@@ -14,7 +14,7 @@ function setup(overrides = {}) {
   const mod = { exports: {} };
   const source = fs.readFileSync(path.join(__dirname, '../src/main.js'), 'utf8') + '\nmodule.exports.ViewForTest = SidebarView;';
   const context = {
-    module: mod, document: dom.window.document, window: { open: (...args) => opened.push(args) }, DIAGNOSTIC_SCRIPT: '', PROJECT_SCRIPT: '', Buffer, URL, process, setTimeout, clearTimeout, setInterval, clearInterval,
+    module: mod, document: dom.window.document, window: { open: (...args) => opened.push(args) }, DIAGNOSTIC_SCRIPT: '', PROJECT_SCRIPT: '', Buffer, URL, process: overrides.process || process, setTimeout, clearTimeout, setInterval, clearInterval,
     require(name) {
       if (name in overrides) return overrides[name];
       if (name === 'obsidian') return { Plugin: Base, ItemView: Base, Notice, Setting: Base, PluginSettingTab: Base, SuggestModal: Base, Modal: Base, Menu: Base };
@@ -95,9 +95,12 @@ test('a disposed remote hook cannot prevent the webview from being cleaned up', 
   assert.equal(removed, true); assert.equal(view.detachNetwork, null); assert.equal(view.webview, null);
   view.onClose(); dom.window.close();
 });
+// The TUI launcher is Windows-only; simulate Windows so these checks also run on Linux CI.
+const asWindows = { process: { ...process, platform: 'win32' }, 'node:path': path.win32 };
 test('TUI action uses the configured local launcher, not a shell-supplied web URL', () => {
   const launches = [];
   const { dom, view, PluginClass } = setup({
+    ...asWindows,
     'node:fs': { existsSync: file => file.endsWith('start.cmd'), statSync: () => ({ isFile: () => true }) },
     'node:child_process': { spawn: (...args) => { launches.push(args); return { on() {}, unref() {} }; } }
   });
@@ -115,6 +118,7 @@ test('TUI action uses the configured local launcher, not a shell-supplied web UR
 test('TUI reports the launcher exit instead of treating process creation as a successful connection', () => {
   const handlers = {};
   const { dom, view, notices, PluginClass } = setup({
+    ...asWindows,
     'node:fs': { existsSync: () => true, statSync: () => ({ isFile: () => true }) },
     'node:child_process': { spawn: () => ({ on(event, callback) { handlers[event] = callback; }, unref() {} }) }
   });
