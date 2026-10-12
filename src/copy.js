@@ -5,7 +5,8 @@ function selectionToMarkdown(selection) {
   const common = nodeElement(range.commonAncestorContainer);
   if (common && common.closest('textarea,input,[contenteditable="true"]')) return null;
   const ancestorMath = common && (common.closest('.katex-display') || common.closest('.katex'));
-  const root = ancestorMath || range.commonAncestorContainer;
+  const ancestorTable = common && common.closest('table');
+  const root = ancestorMath || (ancestorTable && !common.closest('td,th') ? ancestorTable : range.commonAncestorContainer);
 
   function visit(node) {
     if (!range.intersectsNode(node)) return '';
@@ -22,11 +23,38 @@ function selectionToMarkdown(selection) {
       if (range.comparePoint(node, node.childNodes.length) === 0) clipped.setEnd(node, node.childNodes.length);
       if (clipped.collapsed) return '';
       const annotation = node.querySelector('annotation[encoding="application/x-tex"]');
-      if (!annotation) return clipped.toString();
-      const tex = annotation.textContent.trim();
+      // OpenCode unwraps annotation/semantics, leaving TeX as direct MathML text.
+      const math = node.querySelector('.katex-mathml math');
+      const tex = (annotation ? annotation.textContent : Array.from(math?.childNodes || [])
+        .filter((child) => child.nodeType === 3).map((child) => child.nodeValue).join('')).trim();
+      if (!tex) return clipped.toString();
       return node.matches('.katex-display') ? '\n\n$$\n' + tex + '\n$$\n\n' : '$' + tex + '$';
     }
     if (node.nodeType === 1 && node.matches('script,style,.katex-mathml')) return '';
+    if (node.nodeName === 'TABLE') {
+      const rows = Array.from(node.rows).filter((row) => {
+        if (!range.intersectsNode(row)) return false;
+        const clipped = range.cloneRange();
+        if (range.comparePoint(row, 0) === 0) clipped.setStart(row, 0);
+        if (range.comparePoint(row, row.childNodes.length) === 0) clipped.setEnd(row, row.childNodes.length);
+        return !clipped.collapsed;
+      });
+      if (!rows.length) return '';
+      const width = Math.max(...rows.map((row) => row.cells.length));
+      const values = rows.map((row) => Array.from({ length: width }, (_, index) => {
+        const cell = row.cells[index];
+        return cell ? visit(cell).trim().replace(/\|/g, '\\|').replace(/\s*\n+\s*/g, '<br>') : '';
+      }));
+      const hasHeader = rows[0].parentElement.nodeName === 'THEAD' || Array.from(rows[0].cells).every((cell) => cell.nodeName === 'TH');
+      // A body-only selection needs an empty Markdown header, not unselected header text.
+      const header = hasHeader ? values.shift() : Array(width).fill('');
+      const alignment = Array.from({ length: width }, (_, index) => {
+        const cell = node.rows[0]?.cells[index];
+        const align = cell?.style.textAlign || cell?.getAttribute('align');
+        return align === 'center' ? ':---:' : align === 'right' ? '---:' : align === 'left' ? ':---' : '---';
+      });
+      return '\n\n' + [header, alignment, ...values].map((cells) => '| ' + cells.join(' | ') + ' |').join('\n') + '\n\n';
+    }
     if (node.nodeName === 'BR') return '\n';
     const content = Array.from(node.childNodes, visit).join('');
     if (!content) return '';

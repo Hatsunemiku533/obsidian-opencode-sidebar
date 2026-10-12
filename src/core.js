@@ -1,11 +1,20 @@
 const { createHash } = require('node:crypto');
+const { normalizeProjectMemory } = require('./projects');
+const { DEFAULT_FONT, DEFAULT_FONT_SIZE, fontKey, fontSize } = require('./theme');
 
 const DEFAULTS = Object.freeze({
   serverUrl: 'http://127.0.0.1:4096',
+  readerBase: 'http://127.0.0.1:18924',
   basicAuth: false,
   username: 'opencode',
   password: '',
   directory: '',
+  tuiLauncher: '',
+  themeOverlay: true,
+  fontFamily: DEFAULT_FONT,
+  fontSize: DEFAULT_FONT_SIZE,
+  rememberProjects: true,
+  projectMemory: Object.freeze({}),
   mathFixes: true
 });
 
@@ -14,6 +23,11 @@ function loadSettings(data = {}) {
   for (const [key, value] of Object.entries(DEFAULTS)) {
     result[key] = typeof data[key] === typeof value ? data[key] : value;
   }
+  // Older versions stored the page color toggle as claudeTheme.
+  if (typeof data.themeOverlay !== 'boolean' && typeof data.claudeTheme === 'boolean') result.themeOverlay = data.claudeTheme;
+  result.fontFamily = fontKey(result.fontFamily);
+  result.fontSize = fontSize(result.fontSize);
+  result.projectMemory = normalizeProjectMemory(data.projectMemory);
   return result;
 }
 
@@ -55,4 +69,14 @@ function sessionUrl(base, id) {
   return normalized + '/server/' + encoded + '/session/' + encodeURIComponent(id);
 }
 
-module.exports = { DEFAULTS, loadSettings, serverUrl, authHeaders, inServerScope, partitionKey, sessionUrl };
+function readerUrl(base, id) {
+  if (!/^ses_[A-Za-z0-9]+$/.test(id)) throw new Error('Choose a valid OpenCode session first.');
+  return serverUrl(base) + '/read/' + encodeURIComponent(id);
+}
+
+function sessionIdFromUrl(value) {
+  try { return new URL(value).pathname.match(/\/session\/(ses_[A-Za-z0-9]+)(?:\/|$)/)?.[1] || ''; }
+  catch { return ''; }
+}
+
+module.exports = { DEFAULTS, loadSettings, serverUrl, authHeaders, inServerScope, partitionKey, sessionUrl, readerUrl, sessionIdFromUrl };

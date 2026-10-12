@@ -2,8 +2,13 @@ const { authHeaders, inServerScope, serverUrl } = require('./core');
 
 function attachAuth(webContents, settings, report) {
   const base = serverUrl(settings.serverUrl);
-  const webRequest = webContents.session.webRequest;
+  const session = webContents.session;
+  const webRequest = session.webRequest;
   const headers = authHeaders(settings);
+  // The embedded page must never raise native OS notifications. Every other permission keeps
+  // Electron's default: granted, except deprecated-sync-clipboard-read, which Electron denies.
+  session.setPermissionCheckHandler((_wc, permission) => permission !== 'notifications' && permission !== 'deprecated-sync-clipboard-read');
+  session.setPermissionRequestHandler((_wc, permission, callback) => callback(permission !== 'notifications'));
   // This partition belongs to this vault/server only. Never send credentials to redirects outside it.
   webRequest.onBeforeSendHeaders({ urls: ['<all_urls>'] }, (details, callback) => {
     const requestHeaders = { ...details.requestHeaders };
@@ -31,6 +36,8 @@ function attachAuth(webContents, settings, report) {
     if (webContents.isDestroyed()) return;
     webContents.removeListener('login', login);
     webRequest.onBeforeSendHeaders(null);
+    session.setPermissionCheckHandler(null);
+    session.setPermissionRequestHandler(null);
   };
 }
 

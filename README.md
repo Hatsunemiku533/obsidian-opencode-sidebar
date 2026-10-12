@@ -11,12 +11,18 @@ This is an unofficial plugin, not affiliated with Obsidian or OpenCode.
 - Configure a separate server URL and project directory for each vault.
 - Connect to local or remote HTTP/HTTPS servers, with optional Basic Auth.
 - Search sessions using an optional directory path on the server.
+- Use a compact Nordic-blue Chinese toolbar and an optional local Windows TUI launcher.
+- Choose the reading font and size for replies; bold text and single line breaks display clearly.
+- Open the current session in a separate reader web page. The reader URL defaults
+  to `http://127.0.0.1:18924` and can be changed in each vault's settings.
 - Render missing inline/block math with bundled KaTeX; no extra local service required.
 - Copy selected replies as Markdown, restoring formulas to `$...$` and `$$...$$`.
 - Isolate live webview sessions across vaults and windows; recover when an offline server returns.
 
-The plugin does **not** launch OpenCode, read its database, run a shell, generate
-conversation snapshots, or require a separate reader service.
+The plugin does **not** launch the OpenCode Web server, read its database, generate
+conversation snapshots, or start a reader service. Clicking **Open OpenCode TUI**
+explicitly runs a local, trusted Windows `.bat`/`.cmd` launcher. The optional reading button
+requires a separate, compatible reader service; embedded chat does not.
 
 ## Install
 
@@ -52,12 +58,59 @@ enable OpenCode Sidebar in **Settings > Community plugins**.
 5. Use **Apply and reconnect**, then the terminal ribbon icon or **OpenCode
    Sidebar: Open sidebar** command.
 
-The project directory filters **Choose session**, not every project shown inside
-the native web UI. Leaving it empty lists all sessions returned by the server.
+The project directory filters the toolbar's **选择会话 (Choose session)** picker,
+not the native web UI's home list. That home list only shows directories opened
+as web projects. If your active sessions live in a subdirectory, choose them
+from the toolbar or open that subdirectory as a project in the native web UI.
+The toolbar title follows session navigation in the native web page. Leaving
+the directory blank lists all sessions returned by the server.
+
+On Windows, **More > 打开 OpenCode TUI** uses `启动opencode-TUI.bat` from the configured
+local project directory when present. For another location or a remote Web
+server, set **TUI 启动脚本** to a trusted local `.bat`/`.cmd` absolute path. It
+does not install or launch OpenCode Web. Do not point it to an untrusted script.
+The plugin shell uses a muted Nordic blue-gray palette. **北欧蓝网页外观** (enabled
+by default) adds a removable light-mode color overlay, medium rounded corners and
+gentle transitions (skipped when the system asks for reduced motion) to the
+embedded app only. Toggling it restores the native look immediately without
+reloading or discarding drafts. Native dark-mode colors, layout, syntax colors
+and diff themes remain unchanged.
+The toolbar **Aa** button, or **正文字体** / **正文字号** in settings, picks the
+message font (Microsoft YaHei by default, Noto Sans SC, or Noto Serif SC; locally
+installed fonts only) and size (13–17px, default 14px). Regardless of the color
+toggle, bold text uses a visibly heavier weight and a single newline inside a
+paragraph is shown as a line break, like Obsidian; copied Markdown is unchanged.
+It does not affect other browser windows, mobile clients or home session filters.
 
 URLs with embedded credentials, queries, fragments, or unsupported schemes are
 rejected. A reverse-proxy subpath is accepted, but your OpenCode/proxy deployment
 must also serve its assets and routing correctly at that path.
+
+### Remember Projects
+
+**记住项目目录 (Remember project directories)** is on by default. Each vault remembers
+the native page's open projects, expansion state and last homepage selection.
+These are restored at document start on reload/recreation without navigating to
+an old session or replacing the toolbar picker's configured directory.
+After enabling, add/select your project once in the native page; later changes
+are saved automatically. Closing a project updates the memory rather than
+reopening it next time. Turning the option off clears the saved directory state
+and stops capture; the next recreated view starts with an empty project list.
+It does not immediately reload the current page or delete server-side data.
+
+Memory is isolated by full vault path, server URL and authentication identity.
+Changing these starts a separate identity rather than restoring another server's
+paths. In multiple windows for one vault, the last saved project-selection change
+wins; unrelated settings saves preserve the latest stored project memory.
+Only directory paths and selection metadata are saved, never native server
+credentials, session tabs or drafts. Paths live in `data.json`; keep this local.
+Startup uses a guest page script registered before navigation, not a webview
+preload (which Obsidian removes). Restoration is checked before capture starts;
+failure preserves the saved memory and shows a diagnostic warning. The temporary
+debugger attachment is released after the startup check or view disposal.
+Up to 50 projects are retained, prioritizing the selected and most recent project.
+The adapter targets OpenCode Web 1.18.18's native storage format; upstream changes
+may require an update.
 
 ## Security And Privacy
 
@@ -73,8 +126,9 @@ must also serve its assets and routing correctly at that path.
   configured server; the native web application controls its own network traffic.
 - Diagnostics omit conversation bodies, URLs and credential values.
 - Each webview uses a private, non-persistent Electron session to avoid
-  authentication-hook conflicts. Web UI local preferences and unsent drafts do
-  not survive closing/recreating the view. Saved conversations remain on the server.
+  authentication-hook conflicts. Project directories can be remembered separately
+  using the option above. Other web UI local preferences and unsent drafts do not
+  survive closing/recreating the view. Saved conversations remain on the server.
 
 Settings are keyed by the full vault path, not just its name, so same-named vaults
 do not collide. Moving a vault to a different path requires configuring it again.
@@ -82,12 +136,30 @@ Settings writes use a short file lock to merge safely across windows. If Obsidia
 crashes during a save and reports a stale lock later, close all windows using the
 plugin and remove only `data.json.lock` from the plugin folder, then reopen it.
 
+## Reader Button
+
+The book icon opens `<reader URL>/read/<session ID>` in a separate browser window,
+using the session currently displayed in the native web UI. If no session is open,
+the plugin asks you to choose one from the project session list.
+
+The default reader address matches the original local setup:
+`http://127.0.0.1:18924`. Change **阅读服务地址 (Reader service URL)** in the plugin
+settings to use another deployment. This is **not** a built-in OpenCode endpoint;
+the reader must already be running and able to read the same conversations.
+The plugin does not install it or send OpenCode Basic Auth credentials to it.
+A stopped reader does not prevent embedded chat from working. No snapshot
+generation or overwrite feature is restored.
+
 ## Math Copy
 
 With math fixes enabled, select text inside a rendered reply and use normal Copy.
 The selection is serialized to plain Markdown, not KaTeX HTML. Paragraph breaks,
-common lists, links, emphasis, and code are retained; this is not a full Markdown
-round-trip exporter (complex tables/nested structures may need editing).
+common lists, links, emphasis, code and ordinary tables are retained. Tables include
+header separators, column alignment, escaped pipes and `<br>` cell line breaks.
+Cross-cell selections remain tables with only selected text; body-only selections
+use an empty header, and single-cell selections stay plain inline content.
+This is not a full Markdown round-trip exporter (merged cells, nested tables and
+deeply nested structures may need editing).
 
 A selection touching part of a formula copies the **complete formula once**.
 Editor/input copying is left alone. OpenCode's own message-copy button may bypass
@@ -101,8 +173,44 @@ the selection handler and use its original source instead.
   every ten seconds. Wrong credentials are not retried indefinitely.
 - **Changed settings:** Apply reconnects with new credentials and may discard an unsent draft.
 - **After a manual plugin update:** toggle the plugin off/on or restart Obsidian.
-- Use **More > Check connection** for API health and **Copy diagnostics** for
-  limited lifecycle messages. API health alone is not proof that the page loaded.
+- Use **More > 诊断嵌入页 (Diagnose embedded page)** to collect API health and page
+  evidence separately. It reports likely next checks, not a proven root cause.
+- **复制调试日志 (Copy debug log)** refreshes the diagnostic snapshot and copies
+  recent persisted history, including earlier connections. **打开日志文件 (Open
+  log file)** opens the actual file. **打开嵌入页开发者工具 (Open webview developer
+  tools)** is available for errors the privacy-safe summary cannot fully explain.
+
+### Diagnostic Evidence
+
+Logs include plugin/build ID, Obsidian/Electron/Chromium versions, a connection ID
+and relative timing, authentication mode, main-document HTTP status, failures of
+scripts/styles, sanitized script filenames and stack locations, DOM root counts,
+panel dimensions, and math/copy-hook status. API health alone is never used to
+claim the page is ready. Console/runtime hooks work even with math fixes disabled.
+
+Known errors are classified (context provider, credential URL, fetch, lazy chunk,
+CSP, and missing session). Arbitrary exception messages, raw HTML, chat text,
+request/response bodies, headers, full URLs and session IDs are not stored.
+ResizeObserver noise and repeated runtime signals are suppressed.
+
+Failures and manual reconnects automatically preserve a page snapshot **before**
+the view is replaced. Diagnosis never restarts the page or clears cache. A slow
+page inspection is bounded to four seconds; API checks have their own timeout.
+
+Per-vault logs are stored in `<system temporary directory>/opencode-sidebar/`,
+with a hashed filename. On Windows this is normally under `%TEMP%`. The active
+file rotates at about 512 KiB and retains one previous file. A disk failure falls
+back to in-memory diagnostics, merged into copied disk history without losing
+the failure-period records. Rotation is protected by a cross-window lock. If a
+crash leaves a stale `<log filename>.rotation.lock`, close the windows using that
+vault and remove only that lock file; do not delete the log itself.
+Runtime error hints expire after a minute; a recovered page is not permanently
+classified as failed because of an earlier transient error.
+OS temporary-file cleanup can remove the logs;
+these are not permanent backups. Two windows editing the same vault can write
+to the same log, so use connection IDs to correlate events. Diagnostic files are
+local only, but still review them before sharing; never paste private settings
+or an unreviewed DevTools/network capture into a public issue.
 
 ## Compatibility
 

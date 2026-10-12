@@ -4,7 +4,11 @@ const { attachAuth } = require('../src/auth');
 
 function guest() {
   const wc = {
-    session: { webRequest: { onBeforeSendHeaders(filter, listener) { wc.handler = filter === null ? null : listener; } } },
+    session: {
+      webRequest: { onBeforeSendHeaders(filter, listener) { wc.handler = filter === null ? null : listener; } },
+      setPermissionCheckHandler(handler) { wc.checkHandler = handler; },
+      setPermissionRequestHandler(handler) { wc.requestHandler = handler; }
+    },
     on(event, listener) { wc.login = listener; },
     removeListener() { wc.removed = true; },
     isDestroyed() { return false; }
