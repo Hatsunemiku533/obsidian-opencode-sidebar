@@ -1,7 +1,9 @@
-# OpenCode Sidebar
+# OpenCode Web Sidebar
 
 Use [OpenCode Web](https://opencode.ai/) next to your notes in Obsidian desktop.
 This is an unofficial plugin, not affiliated with Obsidian or OpenCode.
+It embeds OpenCode's web interface; it is not a terminal emulator, and is a different
+plugin from "OpenCode CLI Sidebar".
 
 [中文说明](README.zh-CN.md)
 
@@ -51,7 +53,7 @@ does not install or start an OpenCode server.
 Install and enable the [BRAT](https://github.com/TfTHacker/obsidian42-brat) community
 plugin in a vault, then add this GitHub repository as a beta plugin:
 
-`Hatsunemiku533/obsidian-opencode-sidebar`
+`Hatsunemiku533/opencode-web-sidebar`
 
 Repeat the installation in each vault. BRAT can update it from GitHub releases;
 settings stay local to the vault. There is no global Obsidian plugin installation.
@@ -59,9 +61,17 @@ settings stay local to the vault. There is no global Obsidian plugin installatio
 ### Manual
 
 Download `main.js`, `manifest.json`, and `styles.css` from
-[Releases](https://github.com/Hatsunemiku533/obsidian-opencode-sidebar/releases).
-Put them in `<vault>/.obsidian/plugins/opencode-sidebar/`, reload Obsidian, then
-enable OpenCode Sidebar in **Settings > Community plugins**.
+[Releases](https://github.com/Hatsunemiku533/opencode-web-sidebar/releases).
+Put them in `<vault>/.obsidian/plugins/opencode-web-sidebar/`, reload Obsidian, then
+enable OpenCode Web Sidebar in **Settings > Community plugins**.
+
+### Upgrading from 1.2.x
+
+Version 1.3.0 renamed the plugin (id `opencode-sidebar` became `opencode-web-sidebar`)
+because the old id was already taken in the community directory. Obsidian treats it as
+a new plugin: install it as above, enable it, then copy your old
+`.obsidian/plugins/opencode-sidebar/data.json` into the new plugin folder to keep your
+settings. Remove the old folder afterwards.
 
 ## Configure
 

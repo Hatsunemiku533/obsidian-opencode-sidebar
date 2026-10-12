@@ -1,6 +1,7 @@
-# OpenCode Sidebar
+# OpenCode Web Sidebar
 
 把 OpenCode 原生网页嵌入 Obsidian 桌面侧栏。非官方插件，不属于 Obsidian 或 OpenCode 团队。
+它嵌入的是 OpenCode 的网页界面，不是终端模拟器，与另一个插件“OpenCode CLI Sidebar”不是同一个。
 
 ![Obsidian 侧栏里的 OpenCode，旁边是笔记](docs/images/hero.png)
 
@@ -14,8 +15,9 @@
 
 目前发布在 GitHub，**尚未提交 Obsidian 社区插件市场**。
 
-- 方便更新的方式：在每个 vault 安装社区插件 BRAT，然后添加 `Hatsunemiku533/obsidian-opencode-sidebar`。
-- 手动方式：从 GitHub Releases 下载 `main.js`、`manifest.json`、`styles.css`，放入该 vault 的 `.obsidian/plugins/opencode-sidebar/`，重新加载 Obsidian 后启用。
+- 方便更新的方式：在每个 vault 安装社区插件 BRAT，然后添加 `Hatsunemiku533/opencode-web-sidebar`。
+- 手动方式：从 GitHub Releases 下载 `main.js`、`manifest.json`、`styles.css`，放入该 vault 的 `.obsidian/plugins/opencode-web-sidebar/`，重新加载 Obsidian 后启用。
+- 从 1.2.x 升级：1.3.0 把插件改名了（id 由 `opencode-sidebar` 改为 `opencode-web-sidebar`，因为旧 id 已被官方市场里的另一个插件占用）。Obsidian 会当作新插件：按上面方式安装并启用，再把旧文件夹 `.obsidian/plugins/opencode-sidebar/` 里的 `data.json` 复制到新插件文件夹，设置就保留了；之后可删除旧文件夹。
 - 每个 vault 都需要安装一次。BRAT 可以从 GitHub 更新，不必每次让 AI 复制代码；Obsidian 本身并没有全局插件安装功能。
 
 ## 配置

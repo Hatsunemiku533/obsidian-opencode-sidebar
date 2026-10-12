@@ -301,7 +301,7 @@ test('unrelated settings from an older window preserve the latest persisted proj
   const old = { identity: id, scope: 'local', projects: [{ worktree: '/old' }], selectedDirectory: '/old' };
   const latest = { ...old, projects: [{ worktree: '/latest' }], selectedDirectory: '/latest' };
   plugin.settings = loadSettings({ ...plugin.settings, projectMemory: old });
-  plugin.manifest = { id: 'opencode-sidebar', dir: folder };
+  plugin.manifest = { id: 'opencode-web-sidebar', dir: folder };
   let data = { vaults: { [plugin.vaultPath]: loadSettings({ ...plugin.settings, projectMemory: latest }) } };
   plugin.loadData = async () => data;
   plugin.saveData = async value => { data = value; };

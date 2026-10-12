@@ -1377,7 +1377,7 @@ module.exports = class OpenCodeSidebarPlugin extends Plugin {
     this.settings = loadSettings(data?.vaults?.[this.vaultPath]);
     this.logger = new DiagnosticLog(this.vaultPath, () => this.diagnosticSecrets());
     const versions = typeof process === "undefined" ? {} : process.versions;
-    this.logger.write("plugin-loaded", { pluginVersion: this.manifest?.version || "unknown", build: false ? "source" : "32dcd48d3219", obsidianVersion: apiVersion || "unknown", electronVersion: versions.electron || "unknown", chromeVersion: versions.chrome || "unknown", platform: typeof process === "undefined" ? "unknown" : process.platform });
+    this.logger.write("plugin-loaded", { pluginVersion: this.manifest?.version || "unknown", build: false ? "source" : "81e426818c32", obsidianVersion: apiVersion || "unknown", electronVersion: versions.electron || "unknown", chromeVersion: versions.chrome || "unknown", platform: typeof process === "undefined" ? "unknown" : process.platform });
     this.registerView(VIEW_TYPE, (leaf) => new SidebarView(leaf, this));
     this.addRibbonIcon("terminal", "Open OpenCode sidebar", () => this.activateView());
     this.addCommand({ id: "open-opencode-sidebar", name: "Open sidebar", callback: () => this.activateView() });
